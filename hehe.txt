@@ -1,0 +1,168 @@
+package com.banking;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Scanner;
+
+public class TransOfFunds {
+	Double amount,bal,am,am1;
+	
+	public void transforOfFunds() throws ClassNotFoundException, SQLException 
+	{
+		Scanner s=new Scanner(System.in);
+		 System.out.println("enter from user name");
+		 String st=s.nextLine();
+		 System.out.println("enter  from user account number");
+	      String n=s.nextLine();
+	      System.out.println("enter to user name");
+	      String st1=s.nextLine();
+	      System.out.println("enter to user account number");
+	      String n1=s.nextLine();
+	      System.out.println("enter branch id");
+	      String st2=s.next();
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      Connection con=DriverManager.getConnection("jdbc:mysql://kbrsvrp01/kbrbankdb?user=sysbank&password=@sys123");
+	      //System.out.println("connected");
+	      Statement stmt=con.createStatement();
+	      		
+	      		/*ResultSet rs=stmt.executeQuery("select User_Name,Account_Number from customerregistration_tbl");
+	      		while (rs.next()) 
+	      		{
+	      	            String user =rs.getString("User_Name");
+	      	            String accno = rs.getString("Account_number");
+	      	            
+	      	if(st.equals(user)&&st1.equals(pass))
+	      		{ 
+	      			System.out.println("welcome "+user);
+	      		}
+	      		else
+	      		{
+	      			//System.out.println("enter proper details");
+	      			Thread.sleep(2000);
+			        System.out.println("");
+	      		}*/
+	      		System.out.println("enter amount to transfer:");
+	      		amount=s.nextDouble();
+	      		
+	    	      ResultSet rs=stmt.executeQuery("select Mybalance from customerregistration_tbl where Account_Number=1");
+	    	      
+	    	      while(rs.next())
+	    	      {
+	    	    	  bal=rs.getDouble(1);
+	    	      }
+	    	      System.out.println(bal);
+	    	      
+	    	      
+				if(amount>bal)
+	    	      {
+					System.out.println("insufficent balane");
+	    	      }
+				else
+	    	    	  
+	      		System.out.println("enter how much time in hours");
+	      		Double time=s.nextDouble();
+	      		if(amount>=1000000&&time>=25)
+	      		{
+	      			bank_NEFT();
+	      		}
+	      		else if(amount<=200000&&time<=24)
+	      		{
+	      			bank_RTGS();
+	      		
+	      		}
+	      		else
+	      			System.out.println("transfer the amount any time");
+	      			bank_IMPS();
+	      		}
+	      		
+	      		
+	      		
+	
+	  
+	public void bank_IMPS() throws SQLException, ClassNotFoundException {
+		System.out.println("this trans is imps");
+		  
+		  //System.out.println(amount);
+		  Class.forName("com.mysql.jdbc.Driver");
+
+	      Connection con=DriverManager.getConnection("jdbc:mysql://kbrsvrp01/kbrbankdb?user=sysbank&password=@sys123");
+	      //System.out.println("connected");
+	      Statement stmt=con.createStatement();
+	      am=bal-amount;
+		     am1=bal+amount;
+	      PreparedStatement pr=con.prepareStatement("UPDATE customerregistration_tbl SET Mybalance='+am+' WHERE Account_Number=1");
+	      pr.executeUpdate();
+	      PreparedStatement pr1=con.prepareStatement("UPDATE customerregistration_tbl SET Mybalance=am1 WHERE Account_Number=2");
+	      pr1.executeUpdate();		
+	      System.out.println("transfered amount successsfully");
+	      //String accno ="";
+	    
+		
+	    	      /*String sql1="select Mybalance from customerregistration_tbl where Account_Number=2";
+	    	      rs=stmt.executeQuery(sql1);
+	    	      
+                 System.out.println("my balance is:"); */
+	  }
+		
+		public  void bank_RTGS() throws SQLException, ClassNotFoundException {
+			System.out.println("this trans is RTGS");
+		
+		  System.out.println("transfered amount successsfully");
+		  Class.forName("com.mysql.jdbc.Driver");
+
+		  Connection con=DriverManager.getConnection("jdbc:mysql://kbrsvrp01/kbrbankdb?user=sysbank&password=@sys123");
+	      Statement stmt=con.createStatement();
+	      am=bal-amount;
+		     am1=bal+amount;		
+	      stmt.executeUpdate("UPDATE customerregistration_tbl SET mybalance=am WHERE Account_Number=1");
+	    	      //String accno ="";
+				stmt.executeUpdate("UPDATE customerregistration_tbl SET mybalance=am1 WHERE Account_Number=2");
+	    	      String sql="select my balance from customerregistration_tbl where Account_Number=2";
+	    	      PreparedStatement ps=con.prepareStatement(sql);
+	    	      ResultSet rs=ps.executeQuery();
+	    	      ps.executeUpdate();
+	    	      
+                 System.out.println("my balance is:");
+		   }
+		  public void   bank_NEFT() throws Exception, ClassNotFoundException
+	  {
+			  System.out.println("this trans is neft");  
+		  System.out.println("transfered amount successsfully");
+		  Thread.sleep(5000);
+	      System.out.println("");
+		  Class.forName("com.mysql.jdbc.Driver");
+
+		  Connection con=DriverManager.getConnection("jdbc:mysql://kbrsvrp01/kbrbankdb?user=sysbank&password=@sys123");
+	      
+	      Statement stmt=con.createStatement();
+	      am=bal-amount;
+		     am1=bal+amount;	
+	      
+	      		
+	      //String accno ="";
+		stmt.executeUpdate(
+	    	        "UPDATE customerregistration_tbl SET mybalance=am WHERE Account_Number=1");
+	    	      stmt.executeUpdate(
+	    	        "UPDATE customerregistration_tbl SET mybalance=am1 WHERE Account_Number=2");
+	    	      String sql="select my balance from customerregistration_tbl where Account_Number=2";
+	    	      PreparedStatement ps=con.prepareStatement(sql);
+	    	      ResultSet rs=ps.executeQuery();
+	    	      
+                 System.out.println("my balance is:");
+	  }
+
+	public static void main(String[] args) throws Exception
+	{
+		TransOfFunds ts=new TransOfFunds();
+		ts.transforOfFunds();
+		
+	}
+		  
+	}
+		
+	
